@@ -65,7 +65,7 @@ Following the instructions, at the step of `make nconfig`, go to "Kernel
 hacking" and uncheck "Filter access to /dev/mem" (at about line 50). Then
 the `CONFIG_STRICT_DEVMEM` macro will be set correctly.
 
-## Sample page table
+## Sample page tables
 Sample page table of `page2frame`:
 ![Page table sample](/images/page2frame.png)
 
