@@ -22,7 +22,7 @@ sudo python3 page2frame.py | hexdump -C
 ```
 
 The Python program, `page2frame.py`, will:
-1. Compile the program `page2frame.c` and run it.
+1. Compile the program `page2frame.c`, run it, and record its pid.
 2. Read `/proc/[pid]/maps` and find index of the page with permission column
    `-w-p` (only writing permission). 
 3. Check and print corresponding data in `/proc/kpagecount` and
@@ -31,7 +31,7 @@ The Python program, `page2frame.py`, will:
    using `hexdump` or `xxd`).
 
 The C program, `page2frame.c`, will:
-1. `mmap` a memory page.
+1. `mmap` a memory page with only writing permission.
 2. Fill the page with some specific pattern. Namely, some integers at the
    beginning and "EOF" at the end.
 3. Print something (so that the Python program knows it has done with step
