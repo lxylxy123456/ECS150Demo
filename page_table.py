@@ -85,7 +85,10 @@ def print_stack(pid) :
 			label = hex64(r.start)
 			if k is not None :
 				if k[2] :
-					print('	master:x%s -> "%s"' % (label, k[2][0]))
+					filename = k[2][0]
+					if filename.endswith('/' + EXEC_NAME) :
+						filename = EXEC_NAME
+					print('	master:x%s -> "%s"' % (label, filename))
 				else :
 					print('	master:x%s -> y%s' % (label, label))
 					print('	y%s [label="mmap?"]' % label)
