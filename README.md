@@ -66,4 +66,11 @@ hacking" and uncheck "Filter access to /dev/mem" (at about line 50). Then
 the `CONFIG_STRICT_DEVMEM` macro will be set correctly.
 
 ## Sample page table
-![page table sample](/images/page2frame.png)
+Sample page table of `page2frame`:
+![Page table sample](/images/page2frame.png)
+
+`page2frame` in another system:
+[pdf](/images/page2frame.pdf)
+
+Page table of `find`:
+[pdf](/images/find.pdf)
