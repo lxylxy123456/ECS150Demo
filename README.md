@@ -38,19 +38,20 @@ The C program, `page2frame.c`, will:
    1 and 2, and then go to sleep.
 
 ## `page_table`
-This demo displays the virtual page table of a program. The output is
-[graphviz](https://www.graphviz.org/) code, and can be viewed using `dot.sh`.
-To run `dot.sh`, `graphviz` need to be installed on the machine, and the
-directory `/tmp/.dot.sh/` will be created and used as temporary directory.
+This demo displays the virtual page table of a program. This program uses the
+[graphviz](https://pypi.org/project/graphviz/) module in Python 3, which can be
+installed using `pip`. 
 
 To run the demo, which shows the page table for `page2frame.c`, use:
 ```
-python3 page_table.py | bash dot.sh
+python3 page_table.py /output/image.pdf
 ```
+
+You can use any other formats that graphviz supports (e.g. `png`, `jpg`)
 
 To view page table for some existing process with pid `[pid]`, use:
 ```
-python3 page_table.py [pid] | bash dot.sh
+python3 page_table.py /output/image.pdf [pid]
 ```
 
 Note: this program is still evolving.

@@ -21,6 +21,7 @@
 '''
 
 import os, sys, re, time, struct, math
+import graphviz
 from subprocess import Popen
 
 EXEC_NAME = 'page2frame'
@@ -31,7 +32,7 @@ def hex64(num) :
 	assert num < (1<<64)
 	return '0x' + hex(num + (1<<64))[3:]
 
-def print_stack(pid) :
+def print_page_table(pid, ofile, oformat) :
 	# Read /proc/[pid]/maps, get virtual page location. See proc(5)
 	table = []
 	for i in open('/proc/%d/maps' % pid).readlines() :
@@ -52,52 +53,58 @@ def print_stack(pid) :
 		memory_range.append((range(low, high), (perms, inode, pathname)))
 	memory_range.pop(-1)
 	memory_range.pop(0)
-	if 'dot.sh' :
-		print('digraph G {')
-		print('	graph [fontname = "Courier 10 Pitch"];')
-		print('	node [fontname = "Courier 10 Pitch"];')
-		print('	edge [fontname = "Courier 10 Pitch"];')
-		print('	rankdir = LR;')
-		html = ('<table border="0" cellborder="1" cellspacing="0" '
-				'cellpadding="4">')
-		for r, k in reversed(memory_range) :
-			low = hex64(r.start)
-			high = hex64(r.stop - 1)
-			label_str = '<x%s>' % low
-			html += '<tr>'
-			nspace = max(int(math.log10(r.stop - r.start) / 3), 1)
-			space = '<br/>' * nspace
-			html += '<td>%s%s%s</td>' % (high, space, low)
-			bg_str = 'bgcolor="green"'
-			if k :
-				port_str = 'port="%s"' % ('x%s' % low)
-				html += '<td %s>r</td>' % (bg_str if 'r' in k[0] else '')
-				html += '<td %s>w</td>' % (bg_str if 'w' in k[0] else '')
-				html += '<td %s>x</td>' % (bg_str if 'x' in k[0] else '')
-				html += '<td %s %s>p</td>' % (port_str, 
-												bg_str if 'p' in k[0] else '')
+	# Begin drawing
+	page_table = graphviz.Digraph(comment='Page Table')
+	page_table.graph_attr['fontname'] = 'Courier 10 Pitch'
+	page_table.node_attr['fontname'] = 'Courier 10 Pitch'
+	page_table.edge_attr['fontname'] = 'Courier 10 Pitch'
+	page_table.graph_attr['rankdir'] = 'LR'
+	# Generate the HTML table
+	html = ('<table border="0" cellborder="1" cellspacing="0" '
+			'cellpadding="4">')
+	for r, k in reversed(memory_range) :
+		low = hex64(r.start)
+		high = hex64(r.stop - 1)
+		label_str = '<x%s>' % low
+		html += '<tr>'
+		nspace = max(int(math.log10(r.stop - r.start) / 3), 1)
+		space = '<br/>' * nspace
+		html += '<td>%s%s%s</td>' % (high, space, low)
+		bg_str = 'bgcolor="green"'
+		if k :
+			port_str = 'port="%s"' % ('x%s' % low)
+			html += '<td %s>r</td>' % (bg_str if 'r' in k[0] else '')
+			html += '<td %s>w</td>' % (bg_str if 'w' in k[0] else '')
+			html += '<td %s>x</td>' % (bg_str if 'x' in k[0] else '')
+			html += '<td %s %s>p</td>' % (port_str, 
+											bg_str if 'p' in k[0] else '')
+		else :
+			html += '<td colspan="4"></td>'
+		html += '</tr>'
+	html += '</table>'
+	page_table.node('master', label='<%s>' % html, shape='none', margin='0')
+	for r, k in memory_range :
+		label = hex64(r.start)
+		if k is not None :
+			if k[2] :
+				filename = k[2][0]
+				if filename.endswith('/' + EXEC_NAME) :
+					filename = EXEC_NAME
+				page_table.edge('master:x%s' % label, filename)
 			else :
-				html += '<td colspan="4"></td>'
-			html += '</tr>'
-		html += '</table>'
-		print('	master [shape=none, margin=0, label=<%s>]' % html)
-		for r, k in memory_range :
-			label = hex64(r.start)
-			if k is not None :
-				if k[2] :
-					filename = k[2][0]
-					if filename.endswith('/' + EXEC_NAME) :
-						filename = EXEC_NAME
-					print('	master:x%s -> "%s"' % (label, filename))
-				else :
-					print('	master:x%s -> y%s' % (label, label))
-					print('	y%s [label="mmap?"]' % label)
-		print('}')
+				page_table.edge('master:x%s' % label, 'y%s' % label)
+				page_table.node('y%s' % label, label='mmap?')
+	page_table.render(ofile, format=oformat, view=True)
 
 if __name__ == '__main__' :
-	if len(sys.argv) > 1 :
+	if len(sys.argv) < 2 :
+		print('Usage: python3 page_table.py output_file.{png|pdf|...} [pid]')
+		exit(1)
+	ofile, oext = os.path.splitext(sys.argv[1])
+	oformat = oext.lstrip('.')
+	if len(sys.argv) > 2 :
 		pid = int(sys.argv[1])
-		print_stack(pid)
+		print_page_table(pid, ofile, oformat)
 	else :
 		# Set up program
 		assert(os.system('make %s 1>&2' % EXEC_NAME) == 0)
@@ -106,7 +113,7 @@ if __name__ == '__main__' :
 		p.stdout.read(1)
 		pid = p.pid
 		# Analyze
-		print_stack(pid)
+		print_page_table(pid, ofile, oformat)
 		# Terminate program
 		p.kill()
 		p.wait()
