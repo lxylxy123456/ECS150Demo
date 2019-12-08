@@ -103,7 +103,7 @@ if __name__ == '__main__' :
 	ofile, oext = os.path.splitext(sys.argv[1])
 	oformat = oext.lstrip('.')
 	if len(sys.argv) > 2 :
-		pid = int(sys.argv[1])
+		pid = int(sys.argv[2])
 		print_page_table(pid, ofile, oformat)
 	else :
 		# Set up program
