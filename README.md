@@ -40,7 +40,8 @@ The C program, `page2frame.c`, will:
 ## `page_table`
 This demo displays the virtual page table of a program. This program uses the
 [graphviz](https://pypi.org/project/graphviz/) module in Python 3, which can be
-installed using `pip`. 
+installed using `pip`. You also need to install `graphviz` so that the `dot`
+command is available. 
 
 To run the demo, which shows the page table for `page2frame.c`, use:
 ```
