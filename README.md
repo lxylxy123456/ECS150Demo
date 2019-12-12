@@ -14,7 +14,7 @@ memory frame from the kernel space.
 
 To run this demo, **you need a Linux kernel which is compiled with
 `CONFIG_STRICT_DEVMEM=n`**. Or the last step of reading `/dev/mem` will fail.
-For some hints on compiling, see below.
+For some hints on compiling, see [here](/CompileLinux.md).
 
 To run the demo, use:
 ```
@@ -57,15 +57,26 @@ python3 page_table.py /output/image.pdf [pid]
 
 Note: this program is still evolving.
 
-## Compiling Linux
-I am using
-"[Building a custom kernel from Debian kernel source](https://kernel-team.pages.debian.net/kernel-handbook/ch-common-tasks.html#s-common-building)"
-to compile a Linux kernel with `CONFIG_STRICT_DEVMEM=n`. The Linux version I
-compiled is 4.9.189.
+## `sync_barrier`
+This is a synchronization barrier implemented using semaphores. There is an
+argument that can turn this program into an incorrect implementation. The
+program `sync_barrier.py` also contains a demo that shows how this
+synchronization barrier works. 
 
-Following the instructions, at the step of `make nconfig`, go to "Kernel
-hacking" and uncheck "Filter access to /dev/mem" (at about line 50). Then
-the `CONFIG_STRICT_DEVMEM` macro will be set correctly.
+The correct behavior of the program with n threads is to print "0" for n times,
+then print "1" for n times, and so on. Each thread prints one "0", then one "1",
+and so on. 
+
+To run the correct one, use
+```
+python3 sync_barrier.py			# 10 threads by default
+python3 sync_barrier.py 100		# Specify number of threads
+```
+
+To run the incorrect one, use
+```
+python3 sync_barrier.py 100 1
+```
 
 ## Sample page tables
 Sample page table of `page2frame`:
