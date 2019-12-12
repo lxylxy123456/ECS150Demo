@@ -2,13 +2,38 @@
 * Some demo programs related to the operating systems class
   ([ECS 150](https://www.cs.ucdavis.edu/blog/ecs-150-operating-systems-system-programming/)). 
 
-## Disclaimer
+## Demos about synchronization
+
+### `sync_barrier`
+This is a synchronization barrier implemented using semaphores. There is an
+argument that can turn this program into an incorrect implementation. The
+program `sync_barrier.py` also contains a demo that shows how this
+synchronization barrier works. 
+
+The correct behavior of the program with n threads is to print "0" for n times,
+then print "1" for n times, and so on. Each thread prints one "0", then one "1",
+and so on. 
+
+To run the correct one, use
+```
+python3 sync_barrier.py			# 10 threads by default
+python3 sync_barrier.py 100		# Specify number of threads
+```
+
+To run the incorrect one, use
+```
+python3 sync_barrier.py 100 1
+```
+
+## Demos about page tables
+
+### Disclaimer
 These demos are very likely to be OS and machine dependent. For example,
 the memory page size of 4096 bytes is hard-coded. I only tested it on a Linux
 4.9.189 x86_64 machine. Using other operating systems and CPU architectures
 may result in error in the program.
 
-## `page2frame`
+### `page2frame`
 This demo gets a memory page of a process in user space by directly reading
 memory frame from the kernel space.
 
@@ -37,7 +62,7 @@ The C program, `page2frame.c`, will:
 3. Print something (so that the Python program knows it has done with step
    1 and 2, and then go to sleep.
 
-## `page_table`
+### `page_table`
 This demo displays the virtual page table of a program. This program uses the
 [graphviz](https://pypi.org/project/graphviz/) module in Python 3, which can be
 installed using `pip`. You also need to install `graphviz` so that the `dot`
@@ -57,28 +82,7 @@ python3 page_table.py /output/image.pdf [pid]
 
 Note: this program is still evolving.
 
-## `sync_barrier`
-This is a synchronization barrier implemented using semaphores. There is an
-argument that can turn this program into an incorrect implementation. The
-program `sync_barrier.py` also contains a demo that shows how this
-synchronization barrier works. 
-
-The correct behavior of the program with n threads is to print "0" for n times,
-then print "1" for n times, and so on. Each thread prints one "0", then one "1",
-and so on. 
-
-To run the correct one, use
-```
-python3 sync_barrier.py			# 10 threads by default
-python3 sync_barrier.py 100		# Specify number of threads
-```
-
-To run the incorrect one, use
-```
-python3 sync_barrier.py 100 1
-```
-
-## Sample page tables
+### Sample page tables
 Sample page table of `page2frame`:
 ![Page table sample](/images/page2frame.png)
 
