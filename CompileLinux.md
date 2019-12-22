@@ -10,6 +10,18 @@ Following the instructions, at the step of `make nconfig`, go to "Kernel
 hacking" and uncheck "Filter access to /dev/mem" (at about line 50). Then
 the `CONFIG_STRICT_DEVMEM` macro will be set correctly.
 
+Steps:
+```
+sudo apt-get install linux-source-4.9 libncurses5-dev libncursesw5-dev
+tar xaf /usr/src/linux-source-4.9.tar.xz
+cd linux-source-4.9/
+make nconfig
+make clean
+time make deb-pkg
+dpkg -i ../linux-image-4.9.189_4.9.189-1_amd64.deb
+shutdown -r now
+```
+
 ### Fedora
 Reference links:
 * [https://docs.fedoraproject.org/en-US/quick-docs/kernel/build-custom-kernel/](https://docs.fedoraproject.org/en-US/quick-docs/kernel/build-custom-kernel/)
