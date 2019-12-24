@@ -31,17 +31,6 @@ class Barrier :
 		self.mutex = threading.Semaphore(1)
 		self.queue1 = threading.Semaphore(0)
 		self.queue2 = threading.Semaphore(0)
-	def wait_old(self) :
-		self.mutex.acquire()
-		self.c += 1
-		c = self.c
-		self.mutex.release()
-		if self.c == self.n :
-			self.c = 0
-			for i in range(self.n - 1) :
-				self.queue.release()
-		else :
-			self.queue.acquire()
 	def wait(self) :
 		self.mutex.acquire()
 		self.c += 1
